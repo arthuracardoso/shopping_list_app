@@ -1,3 +1,4 @@
+// Utilizado apenas como exemplo no começo do projeto
 import 'package:shopping_list_app/data/categories.dart';
 import 'package:shopping_list_app/models/category_model.dart';
 import 'package:shopping_list_app/models/grocery_model.dart';

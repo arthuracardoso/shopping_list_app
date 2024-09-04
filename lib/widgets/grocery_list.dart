@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:shopping_list_app/data/dummy_items.dart';
+import 'package:shopping_list_app/models/grocery_model.dart';
 import 'package:shopping_list_app/widgets/new_item.dart';
 
 class GroceryList extends StatefulWidget {
@@ -10,12 +10,22 @@ class GroceryList extends StatefulWidget {
 }
 
 class _GroceryListState extends State<GroceryList> {
-  void _addItem() {
-    Navigator.of(context).push(
+  final List<GroceryModel> _groceryItems = [];
+
+  void _addItem() async {
+    final newItem = await Navigator.of(context).push<GroceryModel>(
       MaterialPageRoute(
         builder: (context) => const NewItem(),
       ),
     );
+
+    if (newItem == null) {
+      return;
+    }
+    // Para que a UI seja atualizada com o novo item
+    setState(() {
+      _groceryItems.add(newItem);
+    });
   }
 
   @override
@@ -27,18 +37,30 @@ class _GroceryListState extends State<GroceryList> {
           IconButton(onPressed: _addItem, icon: const Icon(Icons.add)),
         ],
       ),
-      body: ListView.builder(
-        itemCount: groceryItems.length,
-        itemBuilder: (context, index) => ListTile(
-          leading: Container(
-            color: groceryItems[index].category.color,
-            width: 20,
-            height: 20,
-          ),
-          title: Text(groceryItems[index].name),
-          trailing: Text(groceryItems[index].quantity.toString()),
-        ),
-      ),
+      body: _groceryItems.isEmpty
+          ? const Center(
+              child: Text('Click on (+) button to add a new item'),
+            )
+          : ListView.builder(
+              itemCount: _groceryItems.length,
+              itemBuilder: (context, index) => Dismissible(
+                direction: DismissDirection.endToStart,
+                onDismissed: (direction) {
+                  _groceryItems.remove(_groceryItems[index]);
+                },
+                key: ValueKey(_groceryItems[index].id),
+                child: ListTile(
+                  leading: Container(
+                    color: _groceryItems[index].category.color,
+                    width: 20,
+                    height: 20,
+                  ),
+                  title: Text(_groceryItems[index].name),
+                  subtitle: const Text('Swipe to the left to remove the item', style: TextStyle(fontSize: 12),),
+                  trailing: Text(_groceryItems[index].quantity.toString(), style: const TextStyle(fontSize: 14),),
+                ),
+              ),
+            ),
     );
   }
 }
