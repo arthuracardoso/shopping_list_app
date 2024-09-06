@@ -15,7 +15,6 @@ class GroceryList extends StatefulWidget {
 class _GroceryListState extends State<GroceryList> {
   List<GroceryModel> _groceryItems = [];
   late Future<List<GroceryModel>> _loadedItems;
-  String? _error;
 
   @override
   void initState() {
